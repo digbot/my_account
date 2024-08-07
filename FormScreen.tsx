@@ -8,11 +8,9 @@ const FormScreen = ({ navigation, route }) => {
   const [comment, setComment] = useState('');
   const [note, setNote] = useState('');
 
-  const { item } = route.params;
-
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://10.0.2.2:5000/api/data', {
+      const response = await fetch('http://192.168.1.2:5000/api/data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,7 +35,7 @@ const FormScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text>Editing: {item.name}</Text>
+      <Text>Adding </Text>
       <TextInput
         style={styles.input}
         placeholder="Date"
