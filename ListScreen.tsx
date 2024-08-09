@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, ScrollView, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Button  } from 'react-native';
 import axios from 'axios';
 import FormScreen from './FormScreen';
+import config from './config';
 
 import { NavigationContainer,useFocusEffect } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -11,12 +12,12 @@ const Stack = createNativeStackNavigator();
 
 const ListScreen = ({ navigation }) => {
 
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-   const fetchListData = useCallback(async () => {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [refreshFlag, setRefreshFlag] = useState(false);
+    const fetchListData = useCallback(async () => {
        try {
-        const response = await axios.get('http://192.168.1.2:5000/api/data');
+        const response = await axios.get('http://192.168.1.2:5000'  + '/api/data');
         setData(response.data.msg_ids);
         setLoading(false);
       } catch (error) {
@@ -26,22 +27,22 @@ const ListScreen = ({ navigation }) => {
     }, []); // Empty dependency array means this function doesn't depend on any props or state
 
 
-  // Use focus effect to fetch data when the screen is focused
-  useFocusEffect(
-    useCallback(() => {
-      fetchListData();
-    }, [fetchListData])
-  );
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
+    // Use focus effect to fetch data when the screen is focused
+    useFocusEffect(
+        useCallback(() => {
+          fetchListData();
+        }, [fetchListData])
     );
-  }
 
-   const handleDelete = (itemId) => {
+    if (loading) {
+        return (
+          <View style={styles.container}>
+            <Text>Loading...</Text>
+          </View>
+        );
+    }
+
+   const handleDelete = (index) => {
       Alert.alert(
         "Confirm Delete",
         "Are you sure you want to delete this item?",
@@ -54,12 +55,11 @@ const ListScreen = ({ navigation }) => {
             text: "Delete",
             onPress: async () => {
               try {
-                const response = await fetch(`http://10.0.2.2:5000/api/data/${itemId}`, {
+                const response = await fetch('http://192.168.1.2:5000'  + `/api/data/${index}`, {
                   method: 'DELETE'
                 });
                 if (response.ok) {
-                  // Remove the item from the list
-                  setListData(prevData => prevData.filter(item => item[1] !== itemId));
+                    fetchListData();
                 } else {
                   console.error('Error deleting item:', response.statusText);
                 }
@@ -89,60 +89,60 @@ const ListScreen = ({ navigation }) => {
             data={data}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => (
-               <TouchableOpacity
-                  style={styles.item}
-                  onPress={() => navigation.navigate('Form', { item })}
-               >
                   <View style={styles.item}>
                     <Text style={styles.date}>{item[0]}</Text>
                     <Text style={styles.amount}>{item[1]}</Text>
                     <Text style={styles.description}>{item[3]}</Text>
                     <TouchableOpacity
-                          onPress={() => handleDelete(index  )} // Assuming item[1] is the ID
+                          onPress={() => handleDelete(index)} // Assuming item[1] is the ID
                           style={{ marginTop: 10, backgroundColor: 'red', padding: 5 }}
                         >
                           <Text style={{ color: 'white' }}>Delete</Text>
                         </TouchableOpacity>
                   </View>
-              </TouchableOpacity>
             )}
           />
     </View>
   )
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'left',
-    alignItems: 'left',
+    justifyContent: 'flex-start', // Align items to the start
+    alignItems: 'flex-start', // Align items to the start
     padding: 15,
-    color: '#ff0000',
     backgroundColor: '#f5f5f5'
   },
   item: {
-    alignItems: 'left',
-    alignContent: 'space-between',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: 'row', // Arrange items in a row
+    justifyContent: 'space-between', // Distribute space between first and last item
+    alignItems: 'center', // Center items vertically
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    color: '#ff0000',
     width: '100%',
   },
   date: {
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  amount: {
-    color: '#ff0000',
-    fontSize: 16
+    color: '#000000',
+    flex: 2, // Flex 1 to take available space
   },
   description: {
     fontSize: 14,
     color: '#666',
+    flex: 2, // Flex 2 for a bit more space
+    marginHorizontal: 10, // Add some horizontal margin for spacing
+  },
+  amount: {
+    color: '#ff0000',
+    fontSize: 16,
+    flex: 1, // Flex 1 to take available space
+    textAlign: 'right', // Align to the right
   },
 });
+
 
 export default ListScreen;

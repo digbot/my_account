@@ -1,16 +1,27 @@
 // FormScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import config from './config';
+
 
 const FormScreen = ({ navigation, route }) => {
-  const [date, setDate] = useState('');
-  const [value, setValue] = useState('');
+  const getCurrentDateFormatted = () => {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');  // Ensure two digits
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+
+    return `${day}.${month}.${year}`;
+  };
+
+  const [value, setValue] = useState('-');
   const [comment, setComment] = useState('');
   const [note, setNote] = useState('');
+  const [date, setDate] = useState(getCurrentDateFormatted());
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://192.168.1.2:5000/api/data', {
+      const response = await fetch('http://192.168.1.2:5000' + '/api/data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
