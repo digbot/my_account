@@ -72,6 +72,18 @@ const ListScreen = ({ navigation }) => {
       );
     };
 
+   const handleMainRun = async  () => {
+       console.log('handleMainRun');
+      try {
+         await fetch('http://192.168.1.2:5000' + `/api/run`, {
+           method: 'POST'
+         });
+       } catch (error) {
+         console.error('Error while run item:', error);
+       }
+    };
+
+
   const renderItem = ({ item, index }) => (
     <View style={styles.itemContainer}>
       <Text style={styles.indexText}>Index: {index}</Text>
@@ -81,11 +93,15 @@ const ListScreen = ({ navigation }) => {
 
   return (
         <View style={styles.container}>
-        <Button
-                title="Add Item"
-                onPress={() => navigation.navigate('Form')}
-              />
-          <FlatList
+           <Button
+                    title="Add Item"
+                    onPress={() => navigation.navigate('Form')}
+           />
+           <Button
+                   title="Run main"
+                   onPress={handleMainRun}
+           />
+           <FlatList
             data={data}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => (
@@ -102,10 +118,9 @@ const ListScreen = ({ navigation }) => {
                   </View>
             )}
           />
-    </View>
+        </View>
   )
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -142,6 +157,12 @@ const styles = StyleSheet.create({
     flex: 1, // Flex 1 to take available space
     textAlign: 'right', // Align to the right
   },
+   button: {
+      flexDirection: 'row',   // Aligns children horizontally
+      justifyContent: 'space-between',  // Spreads them out
+      paddingHorizontal: 20,  // Adds space on the sides
+      marginHorizontal: 10,  // Adds space between buttons
+   }
 });
 
 
