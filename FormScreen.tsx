@@ -21,7 +21,7 @@ const FormScreen = ({ navigation, route }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://192.168.1.2:5000' + '/api/data', {
+      const response = await fetch('http://45.92.108.19:5000' + '/api/data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

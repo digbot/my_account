@@ -17,7 +17,7 @@ const ListScreen = ({ navigation }) => {
     const [refreshFlag, setRefreshFlag] = useState(false);
     const fetchListData = useCallback(async () => {
        try {
-        const response = await axios.get('http://192.168.1.2:5000'  + '/api/data');
+        const response = await axios.get('http://45.92.108.19:5000'  + '/api/data');
         setData(response.data.msg_ids);
         setLoading(false);
       } catch (error) {
@@ -55,14 +55,10 @@ const ListScreen = ({ navigation }) => {
             text: "Delete",
             onPress: async () => {
               try {
-                const response = await fetch('http://192.168.1.2:5000'  + `/api/data/${index}`, {
+                const response = await fetch('http://45.92.108.19:5000' + `/api/data/${index}`, {
                   method: 'DELETE'
                 });
-                if (response.ok) {
-                    fetchListData();
-                } else {
-                  console.error('Error deleting item:', response.statusText);
-                }
+                fetchListData();
               } catch (error) {
                 console.error('Error deleting item:', error);
               }
